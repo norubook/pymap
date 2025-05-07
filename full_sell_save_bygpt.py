@@ -88,5 +88,7 @@ while True:
     pygame.display.flip()
 
 
-
-
+##    pygame.draw.line(screen, (200, 200, 200), (0, y, WIDTH, y))
+## TypeError: function missing required argument 'end_pos' (pos 4)
+## 実行時エラー発生しました．グリッド線を書いている部分に問題があるため，グリッド線を削除したsample.py
+## に合わせて新しいプログラムを記述します．
