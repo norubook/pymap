@@ -92,3 +92,44 @@ while True:
 ## TypeError: function missing required argument 'end_pos' (pos 4)
 ## 実行時エラー発生しました．グリッド線を書いている部分に問題があるため，グリッド線を削除したsample.py
 ## に合わせて新しいプログラムを記述します．
+
+'''
+chatgptに聞くと
+def save_minimal_indexed(filename="dotmap.json"):
+    pixel_data = []
+    for y in range(ROWS):
+        for x in range(COLS):
+            color = grid[y][x]
+            if color != WHITE:
+                hex_color = "#{:02X}{:02X}{:02X}".format(*color)
+                pixel_data.append([x, y, hex_color])
+    with open(filename, "w") as f:
+        json.dump({"cell_size": CELL_SIZE, "pixels": pixel_data}, f)
+    print("インデックス保存しました。")
+
+def load_minimal_indexed(filename="dotmap.json"):
+    global grid
+    grid = [[WHITE for _ in range(COLS)] for _ in range(ROWS)]
+    with open(filename, "r") as f:
+        data = json.load(f)
+        for px in data["pixels"]:
+            x, y, hex_color = px
+            r = int(hex_color[1:3], 16)
+            g = int(hex_color[3:5], 16)
+            b = int(hex_color[5:7], 16)
+            grid[y][x] = (r, g, b)
+    print("インデックス読み込み完了。")
+
+といった返答が来たけれど，今後ドットサイズの変換にも対応させるため
+ドットあたり1つの場所で保存を行いたい．
+
+ならfor文を
+for y in range(ROWS/DOT_SIZE)
+for x in range(COLS/DOT_SIZE)にして
+
+color =grid[y*DOT_SIZE][x*DOT_SIZE]にする．
+colorがwhiteかどうかは判定せず，そこにある色を読み取る．
+簡易的にするためBLUEなら1，REDなら2のように数値で示す．
+といった形で実装する考えです．
+
+'''
