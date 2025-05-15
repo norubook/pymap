@@ -8,23 +8,45 @@ import pygame
 import sys
 from pygame.locals import*
 import json
+import csv
 
 SCREEN_SIZE = (500,500)
 
+#保存とロード
+#get_atではrgbと不透明度の形式で取得
 
-def save_grid(filename="dotdata.json"):
+def save_grid(filename,CELL_SIZE,screen):
     with open(filename, "w") as f:
-        # 色をRGBリストに変換して保存
-        json.dump([[[r, g, b] for (r, g, b) in row] for row in grid], f)
+        list =[]
+        writer = csv.writer(f)
+        for i in range(SCREEN_SIZE[1] // CELL_SIZE):
+            for k in range(SCREEN_SIZE[0] // CELL_SIZE):
+                cell_col = screen.get_at([k*CELL_SIZE,i*CELL_SIZE])
+                if cell_col ==(255,255,255,255):
+                    list.append('w')
+                elif cell_col ==(255,0,0,255):
+                    list.append('r')
+                elif cell_col ==(0,255,0,255):
+                    list.append('g')
+                elif cell_col ==(0,0,255,255):
+                    list.append('b')
+                else:
+                    list.append('n')
+            writer.writerow(list)
+            list=[]
+
+
+
     print("保存しました。")
 
-def load_grid(filename="dotdata.json"):
+def load_grid(filename):
     global grid
     try:
         with open(filename, "r") as f:
-            data = json.load(f)
-            grid = [[tuple(cell) for cell in row] for row in data]
+            data = f.read
+            size = len(data[0]) 
         print("読み込み完了。")
+        return f
     except FileNotFoundError:
         print("保存ファイルが見つかりませんでした。")
 
@@ -71,9 +93,10 @@ def main():
                 elif event.key == pygame.K_w:
                     current_color = WHITE
                 elif event.key == pygame.K_s:
-                    save_grid()
+                    save_grid("pymap/pymap/dotdata.csv",CELL_SIZE,screen)
                 elif event.key == pygame.K_l:
-                    load_grid()
+                    file = load_grid("pymap/pymap/dotdata.csv")
+                    
 
         pygame.display.flip()
             
