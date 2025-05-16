@@ -16,7 +16,7 @@ SCREEN_SIZE = (500,500)
 #get_atではrgbと不透明度の形式で取得
 
 def save_grid(filename,CELL_SIZE,screen):
-    with open(filename, "w") as f:
+    with open(filename, "w",newline="") as f: #newlineを外すと改行がおかしくなるため注意
         list =[]
         writer = csv.writer(f)
         for i in range(SCREEN_SIZE[1] // CELL_SIZE):
@@ -39,14 +39,30 @@ def save_grid(filename,CELL_SIZE,screen):
 
     print("保存しました。")
 
-def load_grid(filename):
+def load_grid(filename,CELL_SIZE,screen):
     global grid
     try:
-        with open(filename, "r") as f:
-            data = f.read
-            size = len(data[0]) 
+        with open(filename, "r",newline="") as f:
+            reader = csv.reader(f)
+            k=0
+            for row in reader:
+                for i in range(len(row)):
+                    cell_col = row[i]
+                    color_code =(0,0,0,0)
+                    if cell_col =='w':
+                        color_code =(255,255,255,255)
+                    elif cell_col =='r':
+                        color_code =(255,0,0,255)
+                    elif cell_col =='g':
+                        color_code =(0,255,0,255)
+                    elif cell_col =='b':
+                        color_code =(0,0,255,255)
+                    else:
+                        color_code =(255,255,255,255)
+                    pygame.draw.rect(screen, color_code, (i*CELL_SIZE, k*CELL_SIZE, CELL_SIZE, CELL_SIZE))
+                k+=1
+
         print("読み込み完了。")
-        return f
     except FileNotFoundError:
         print("保存ファイルが見つかりませんでした。")
 
@@ -95,7 +111,7 @@ def main():
                 elif event.key == pygame.K_s:
                     save_grid("pymap/pymap/dotdata.csv",CELL_SIZE,screen)
                 elif event.key == pygame.K_l:
-                    file = load_grid("pymap/pymap/dotdata.csv")
+                    load_grid("pymap/pymap/dotdata.csv",CELL_SIZE,screen)
                     
 
         pygame.display.flip()
