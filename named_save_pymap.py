@@ -88,7 +88,9 @@ def main():
 
     while True:
 
-        print(f"\rmode = {input_active_save} {input_active_load} {input_text}",end = '',flush = True)
+        print(f"\rsavemode ={input_active_save}             "
+               f"\rloadmode ={input_active_load}            "
+               f"\rinput:{input_text}                      ",end = '',flush = True)
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -115,14 +117,16 @@ def main():
                     current_color = BLUE
                 elif event.key == pygame.K_w:
                     current_color = WHITE
-                elif (event.key == pygame.K_s) & (input_active_save == False) & (input_active_load ==False):
+                elif (event.key == pygame.K_s) & (input_active_save == False):
                     input_active_save = True
+                    input_active_load = False
                     input_text = ""
                 elif (event.key == pygame.K_RETURN) & (input_active_save == True):
                     input_active_save = False
                     save_grid(f"pymap/pymap/mapdata_{input_text}.csv",CELL_SIZE,screen)
-                elif (event.key == pygame.K_l) & (input_active_load == False) & (input_active_save ==False):
+                elif (event.key == pygame.K_l) & (input_active_load == False) :
                     input_active_load = True
+                    input_active_save = False
                     input_text = ""
                 elif (event.key == pygame.K_RETURN) & (input_active_load == True):
                     input_active_load = False
