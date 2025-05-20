@@ -89,8 +89,8 @@ def main():
     while True:
 
         print(f"\rsavemode ={input_active_save}             "
-               f"\rloadmode ={input_active_load}            "
-               f"\rinput:{input_text}                      ",end = '',flush = True)
+               f"loadmode ={input_active_load}            "
+               f"input:{input_text}                        ",end = '',flush = True)
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
