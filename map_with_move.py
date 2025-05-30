@@ -14,8 +14,10 @@ import csv
 
 SCREEN_SIZE = (500,500)
 
+current_coordinates=(0,0)
+
 #保存とロード
-#get_atではrgbと不透明度の形式で取得
+#get_atではrgb+不透明度の形式で取得
 
 def save_grid(filename,CELL_SIZE,screen):
     with open(filename, "w",newline="") as f: #newlineを外すと改行がおかしくなるため注意
@@ -47,6 +49,8 @@ def load_grid(filename,CELL_SIZE,screen):
         with open(filename, "r",newline="") as f:
             reader = csv.reader(f)
             k=0
+            #サイズ変更後の処理を設定後下記を適用してサイズを取得してください
+            #load_map_size=next(reader)
             for row in reader:
                 for i in range(len(row)):
                     cell_col = row[i]
@@ -61,7 +65,9 @@ def load_grid(filename,CELL_SIZE,screen):
                         color_code =(0,0,255,255)
                     else:
                         color_code =(255,255,255,255)
-                    pygame.draw.rect(screen, color_code, (i*CELL_SIZE, k*CELL_SIZE, CELL_SIZE, CELL_SIZE))
+                    #描画位置拡張試し書き
+                    #pygame.draw.rect(screen, color_code, ((i*CELL_SIZE)-current_coordinates, (k*CELL_SIZE)-current_coordinates, CELL_SIZE, CELL_SIZE))
+                    pygame.draw.rect(screen, color_code, ((i*CELL_SIZE), k*CELL_SIZE, CELL_SIZE, CELL_SIZE))
                 k+=1
 
         print("読み込み完了。")
