@@ -23,6 +23,10 @@ def save_grid(filename,CELL_SIZE,screen):
     with open(filename, "w",newline="") as f: #newlineを外すと改行がおかしくなるため注意
         list =[]
         writer = csv.writer(f)
+        #1行目データ
+        list.append("this file is ver2")
+        writer.writerow(list)
+        list=[]
         for i in range(SCREEN_SIZE[1] // CELL_SIZE):
             for k in range(SCREEN_SIZE[0] // CELL_SIZE):
                 cell_col = screen.get_at([k*CELL_SIZE,i*CELL_SIZE])
@@ -50,7 +54,7 @@ def load_grid(filename,CELL_SIZE,screen):
             reader = csv.reader(f)
             k=0
             #サイズ変更後の処理を設定後下記を適用してサイズを取得してください
-            #load_map_size=next(reader)
+            load_map_info=next(reader)
             for row in reader:
                 for i in range(len(row)):
                     cell_col = row[i]
@@ -135,14 +139,14 @@ def main():
                     input_text = ""
                 elif (event.key == pygame.K_RETURN) & (input_active_save == True):
                     input_active_save = False
-                    save_grid(f"pymap/pymap/mapdata_{input_text}.csv",CELL_SIZE,screen)
+                    save_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",CELL_SIZE,screen)
                 elif (event.key == pygame.K_l) & (input_active_load == False) :
                     input_active_load = True
                     input_active_save = False
                     input_text = ""
                 elif (event.key == pygame.K_RETURN) & (input_active_load == True):
                     input_active_load = False
-                    load_grid(f"pymap/pymap/mapdata_{input_text}.csv",CELL_SIZE,screen)
+                    load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",CELL_SIZE,screen)
 
         pygame.display.flip()
             
