@@ -24,7 +24,7 @@ def save_grid(filename,CELL_SIZE,screen):
         list =[]
         writer = csv.writer(f)
         #1行目データ
-        list.append("this file is ver2")
+        list.append("ver2")
         writer.writerow(list)
         list=[]
         for i in range(SCREEN_SIZE[1] // CELL_SIZE):
@@ -47,6 +47,18 @@ def save_grid(filename,CELL_SIZE,screen):
 
     print("保存しました。")
 
+
+#ver2の場合のマップ情報の抽出関数
+#想定返り値はname，wide，length
+
+
+def load_ver2(map_info_row):
+    #仮置き返り値
+    return 0
+
+
+#loadの関数
+
 def load_grid(filename,CELL_SIZE,screen):
     global grid
     try:
@@ -54,7 +66,12 @@ def load_grid(filename,CELL_SIZE,screen):
             reader = csv.reader(f)
             k=0
             #サイズ変更後の処理を設定後下記を適用してサイズを取得してください
-            load_map_info=next(reader)
+            map_info_row=next(reader)
+            if(map_info_row[0]=="ver2"):
+                file_info =load_ver2(map_info_row)
+                
+
+
             for row in reader:
                 for i in range(len(row)):
                     cell_col = row[i]
