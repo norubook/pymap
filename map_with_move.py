@@ -19,27 +19,31 @@ current_coordinates=(0,0)
 #保存とロード
 #get_atではrgb+不透明度の形式で取得
 
-def save_grid(filename,CELL_SIZE,screen):
+def save_grid(filename,CELL_SIZE,screen,name_data,wide,length):
     with open(filename, "w",newline="") as f: #newlineを外すと改行がおかしくなるため注意
         list =[]
         writer = csv.writer(f)
         #1行目データ
         list.append("ver2")
+        list.append(name_data)
+        list.append(wide)
+        list.append(length)
         writer.writerow(list)
         list=[]
         for i in range(SCREEN_SIZE[1] // CELL_SIZE):
-            for k in range(SCREEN_SIZE[0] // CELL_SIZE):
-                cell_col = screen.get_at([k*CELL_SIZE,i*CELL_SIZE])
-                if cell_col ==(255,255,255,255):
-                    list.append('w')
-                elif cell_col ==(255,0,0,255):
-                    list.append('r')
-                elif cell_col ==(0,255,0,255):
-                    list.append('g')
-                elif cell_col ==(0,0,255,255):
-                    list.append('b')
-                else:
-                    list.append('n')
+            for j in range(wide//SCREEN_SIZE[0]):
+                for k in range(SCREEN_SIZE[0] // CELL_SIZE):
+                    cell_col = screen.get_at([k*CELL_SIZE,i*CELL_SIZE])
+                    if cell_col ==(255,255,255,255):
+                        list.append('w')
+                    elif cell_col ==(255,0,0,255):
+                        list.append('r')
+                    elif cell_col ==(0,255,0,255):
+                        list.append('g')
+                    elif cell_col ==(0,0,255,255):
+                        list.append('b')
+                    else:
+                        list.append('n')
             writer.writerow(list)
             list=[]
 
@@ -156,7 +160,7 @@ def main():
                     input_text = ""
                 elif (event.key == pygame.K_RETURN) & (input_active_save == True):
                     input_active_save = False
-                    save_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",CELL_SIZE,screen)
+                    save_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",CELL_SIZE,screen,input_text,500,500)
                 elif (event.key == pygame.K_l) & (input_active_load == False) :
                     input_active_load = True
                     input_active_save = False
