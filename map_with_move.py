@@ -19,7 +19,7 @@ current_coordinates=(0,0)
 #保存とロード
 #get_atではrgb+不透明度の形式で取得
 
-def save_grid(filename,CELL_SIZE,screen,name_data,wide,length):
+def save_grid(filename,CELL_SIZE,screen,name_data,wide,length,display_map):
     with open(filename, "w",newline="") as f: #newlineを外すと改行がおかしくなるため注意
         list =[]
         writer = csv.writer(f)
@@ -30,22 +30,9 @@ def save_grid(filename,CELL_SIZE,screen,name_data,wide,length):
         list.append(length)
         writer.writerow(list)
         list=[]
-        for i in range(SCREEN_SIZE[1] // CELL_SIZE):
-            for j in range(wide//SCREEN_SIZE[0]):
-                for k in range(SCREEN_SIZE[0] // CELL_SIZE):
-                    cell_col = screen.get_at([k*CELL_SIZE,i*CELL_SIZE])
-                    if cell_col ==(255,255,255,255):
-                        list.append('w')
-                    elif cell_col ==(255,0,0,255):
-                        list.append('r')
-                    elif cell_col ==(0,255,0,255):
-                        list.append('g')
-                    elif cell_col ==(0,0,255,255):
-                        list.append('b')
-                    else:
-                        list.append('n')
+        for i in range(length//CELL_SIZE):
+            list=(display_map[i])
             writer.writerow(list)
-            list=[]
 
 
 
@@ -58,12 +45,18 @@ def save_grid(filename,CELL_SIZE,screen,name_data,wide,length):
 
 def load_ver2(map_info_row):
     #仮置き返り値
-    return 0
+    return_row = []
+
+    for i in range(len(map_info_row)):
+        return_row.append(map_info_row[i])
+
+
+    return return_row
 
 
 #loadの関数
 
-def load_grid(filename,CELL_SIZE,screen):
+def load_grid(filename,display_map):
     global grid
     try:
         with open(filename, "r",newline="") as f:
@@ -74,25 +67,14 @@ def load_grid(filename,CELL_SIZE,screen):
             if(map_info_row[0]=="ver2"):
                 file_info =load_ver2(map_info_row)
                 
-
-
-            for row in reader:
+            if ((int(file_info[2])<=1000)&(int(file_info[3])<=1000)):
+             for row in reader:
                 for i in range(len(row)):
                     cell_col = row[i]
-                    color_code =(0,0,0,0)
-                    if cell_col =='w':
-                        color_code =(255,255,255,255)
-                    elif cell_col =='r':
-                        color_code =(255,0,0,255)
-                    elif cell_col =='g':
-                        color_code =(0,255,0,255)
-                    elif cell_col =='b':
-                        color_code =(0,0,255,255)
-                    else:
-                        color_code =(255,255,255,255)
+                    display_map[k][i]=cell_col
                     #描画位置拡張試し書き
                     #pygame.draw.rect(screen, color_code, ((i*CELL_SIZE)-current_coordinates, (k*CELL_SIZE)-current_coordinates, CELL_SIZE, CELL_SIZE))
-                    pygame.draw.rect(screen, color_code, ((i*CELL_SIZE), k*CELL_SIZE, CELL_SIZE, CELL_SIZE))
+                    #pygame.draw.rect(screen, color_code, ((i*CELL_SIZE), k*CELL_SIZE, CELL_SIZE, CELL_SIZE))
                 k+=1
 
         print("読み込み完了。")
@@ -119,9 +101,12 @@ def main():
     GREEN = (0, 255, 0)
     BLUE  = (0, 0, 255)
 
+    max_CELL_x_num = 50
+    max_CELL_y_num = 50
+
 
     #マップの設定
-    display_map = [['w' for a in range(500)]for b in range(500)]
+    display_map = [['w' for a in range(max_CELL_x_num)]for b in range(max_CELL_y_num)]
     
 
 
@@ -134,8 +119,8 @@ def main():
         
         
         
-        for k in range(500):
-                for i in range(500):
+        for k in range(max_CELL_y_num):
+                for i in range(max_CELL_x_num):
                     cell_col = display_map[k][i]
                     color_code =(0,0,0,0)
                     if cell_col =='w':
@@ -194,7 +179,7 @@ def main():
                     input_text = ""
                 elif (event.key == pygame.K_RETURN) & (input_active_save == True):
                     input_active_save = False
-                    save_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",CELL_SIZE,screen,input_text,500,500)
+                    save_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",CELL_SIZE,screen,input_text,1000,1000,display_map)
                 elif (event.key == pygame.K_s) & (input_active_save == True):
                     input_active_save = False
                 elif (event.key == pygame.K_l) & (input_active_load == False) :
@@ -203,7 +188,7 @@ def main():
                     input_text = ""
                 elif (event.key == pygame.K_RETURN) & (input_active_load == True):
                     input_active_load = False
-                    load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",CELL_SIZE,screen)
+                    load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",display_map)
                 elif (event.key == pygame.K_l) & (input_active_load == True) :
                     input_active_load = False
                 elif (event.key == pygame.K_j) & (input_active_load == True) :
