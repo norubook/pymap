@@ -119,6 +119,9 @@ def main():
     GREEN = (0, 255, 0)
     BLUE  = (0, 0, 255)
 
+
+    #マップの設定
+    display_map = [['w' for a in range(500)]for b in range(500)]
     
 
 
@@ -129,15 +132,46 @@ def main():
                f"loadmode ={input_active_load}            "
                f"input:{input_text}                        ",end = '',flush = True)
         
+        
+        
+        for k in range(500):
+                for i in range(500):
+                    cell_col = display_map[k][i]
+                    color_code =(0,0,0,0)
+                    if cell_col =='w':
+                        color_code =(255,255,255,255)
+                    elif cell_col =='r':
+                        color_code =(255,0,0,255)
+                    elif cell_col =='g':
+                        color_code =(0,255,0,255)
+                    elif cell_col =='b':
+                        color_code =(0,0,255,255)
+                    else:
+                        color_code =(255,255,255,255)
+                    #描画位置拡張試し書き
+                    pygame.draw.rect(screen, color_code, ((i*CELL_SIZE)-(current_coordinates[0]*CELL_SIZE), (k*CELL_SIZE)-(current_coordinates[1]*CELL_SIZE), CELL_SIZE, CELL_SIZE))
+                    #pygame.draw.rect(screen, color_code, ((i*CELL_SIZE), k*CELL_SIZE, CELL_SIZE, CELL_SIZE))
+        
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
-                grid_x = (x // CELL_SIZE) * CELL_SIZE
-                grid_y = (y // CELL_SIZE) * CELL_SIZE
-                pygame.draw.rect(screen, current_color, (grid_x, grid_y, CELL_SIZE, CELL_SIZE))
+                camera_cell_x =(current_coordinates[0]//CELL_SIZE)
+                camera_cell_y =(current_coordinates[1]//CELL_SIZE)
+                grid_x = (x // CELL_SIZE)+camera_cell_x
+                grid_y = (y // CELL_SIZE)+camera_cell_y
+                if current_color==RED:
+                    display_map[grid_y][grid_x]='r'
+                elif current_color==BLUE:
+                    display_map[grid_y][grid_x]='b'   
+                elif current_color==WHITE:
+                    display_map[grid_y][grid_x]='w'
+                elif current_color==GREEN:
+                    display_map[grid_y][grid_x]='g' 
+                #pygame.draw.rect(screen, current_color, (grid_x*CELL_SIZE, grid_y*CELL_SIZE, CELL_SIZE, CELL_SIZE))
 
             # キーで色変更
             elif event.type == pygame.KEYDOWN:
@@ -172,6 +206,8 @@ def main():
                     load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",CELL_SIZE,screen)
                 elif (event.key == pygame.K_l) & (input_active_load == True) :
                     input_active_load = False
+                elif (event.key == pygame.K_j) & (input_active_load == True) :
+                    print(display_map)
 
         pygame.display.flip()
             
