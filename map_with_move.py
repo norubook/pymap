@@ -161,6 +161,8 @@ def main():
                 elif (event.key == pygame.K_RETURN) & (input_active_save == True):
                     input_active_save = False
                     save_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",CELL_SIZE,screen,input_text,500,500)
+                elif (event.key == pygame.K_s) & (input_active_save == True):
+                    input_active_save = False
                 elif (event.key == pygame.K_l) & (input_active_load == False) :
                     input_active_load = True
                     input_active_save = False
@@ -168,6 +170,8 @@ def main():
                 elif (event.key == pygame.K_RETURN) & (input_active_load == True):
                     input_active_load = False
                     load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",CELL_SIZE,screen)
+                elif (event.key == pygame.K_l) & (input_active_load == True) :
+                    input_active_load = False
 
         pygame.display.flip()
             
