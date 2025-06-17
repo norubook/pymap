@@ -33,6 +33,19 @@ SCREEN_SIZE = (500,500)
 
 current_coordinates=[0,0]
 
+max_CELL_x_num = 50
+max_CELL_y_num = 50
+
+#カラーコード
+color_code={
+    'w':(255,255,255,255),
+    'r':(255,0,0,255),
+    'g':(0,255,0,255),
+    'b':(0,0,255,255),
+}
+
+
+
 #保存とロード
 #get_atではrgb+不透明度の形式で取得
 
@@ -118,9 +131,6 @@ def main():
     GREEN = (0, 255, 0)
     BLUE  = (0, 0, 255)
 
-    max_CELL_x_num = 50
-    max_CELL_y_num = 50
-
 
     #マップの設定
     display_map = [['w' for a in range(max_CELL_x_num)]for b in range(max_CELL_y_num)]
@@ -139,6 +149,8 @@ def main():
         for k in range(max_CELL_y_num):
                 for i in range(max_CELL_x_num):
                     cell_col = display_map[k][i]
+                    '''
+                    以下if文でコード振り分けする場合の文章
                     color_code =(0,0,0,0)
                     if cell_col =='w':
                         color_code =(255,255,255,255)
@@ -150,8 +162,10 @@ def main():
                         color_code =(0,0,255,255)
                     else:
                         color_code =(255,255,255,255)
+                    '''
+                    color=color_code.get(cell_col,(255,255,255,255))
                     #描画位置拡張試し書き
-                    pygame.draw.rect(screen, color_code, (((i-current_coordinates[0])*CELL_SIZE), ((k-current_coordinates[1])*CELL_SIZE), CELL_SIZE, CELL_SIZE))
+                    pygame.draw.rect(screen, color, (((i-current_coordinates[0])*CELL_SIZE), ((k-current_coordinates[1])*CELL_SIZE), CELL_SIZE, CELL_SIZE))
                     #pygame.draw.rect(screen, color_code, ((i*CELL_SIZE), k*CELL_SIZE, CELL_SIZE, CELL_SIZE))
         
         
@@ -161,10 +175,8 @@ def main():
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
-                camera_cell_x =(current_coordinates[0]//CELL_SIZE)
-                camera_cell_y =(current_coordinates[1]//CELL_SIZE)
-                grid_x = (x // CELL_SIZE)+camera_cell_x
-                grid_y = (y // CELL_SIZE)+camera_cell_y
+                grid_x = (x // CELL_SIZE)+current_coordinates[0]
+                grid_y = (y // CELL_SIZE)+current_coordinates[1]
                 if current_color==RED:
                     display_map[grid_y][grid_x]='r'
                 elif current_color==BLUE:
@@ -210,13 +222,13 @@ def main():
                     input_active_load = False
                 elif (event.key == pygame.K_j) & (input_active_load == True) :
                     print(display_map)
-                elif (event.key == pygame.K_LEFT):
+                elif (event.key == pygame.K_LEFT) & (current_coordinates[0]>0):
                     current_coordinates[0] -= 1
-                elif (event.key == pygame.K_RIGHT):
+                elif (event.key == pygame.K_RIGHT) & (current_coordinates[0]<(max_CELL_x_num-(SCREEN_SIZE[0]//CELL_SIZE))):
                     current_coordinates[0] += 1
-                elif (event.key == pygame.K_UP):
+                elif (event.key == pygame.K_UP) & (current_coordinates[1]>0):
                     current_coordinates[1] -= 1
-                elif (event.key == pygame.K_DOWN):
+                elif (event.key == pygame.K_DOWN) & (current_coordinates[1]<(max_CELL_y_num-(SCREEN_SIZE[1]//CELL_SIZE))):
                     current_coordinates[1] += 1
 
         pygame.display.flip()
