@@ -84,22 +84,24 @@ def load_ver2(map_info_row):
 
 #loadの関数
 
-def load_grid(filename,display_map):
+def load_grid(filename,display_map,start_point):
     global grid
     try:
         with open(filename, "r",newline="") as f:
             reader = csv.reader(f)
-            k=0
+            k=start_point[1]
             #サイズ変更後の処理を設定後下記を適用してサイズを取得してください
             map_info_row=next(reader)
             if(map_info_row[0]=="ver2"):
                 file_info =load_ver2(map_info_row)
                 
-            if ((int(file_info[2])<=1000)&(int(file_info[3])<=1000)):
-             for row in reader:
+        
+            for row in reader:
                 for i in range(len(row)):
                     cell_col = row[i]
-                    display_map[k][i]=cell_col
+                    point_i=i+start_point[0]
+                    if((point_i<max_CELL_num[0]) & (k<max_CELL_num[1])):
+                        display_map[k][point_i]=cell_col
                     #描画位置拡張試し書き
                     #pygame.draw.rect(screen, color_code, ((i*CELL_SIZE)-current_coordinates, (k*CELL_SIZE)-current_coordinates, CELL_SIZE, CELL_SIZE))
                     #pygame.draw.rect(screen, color_code, ((i*CELL_SIZE), k*CELL_SIZE, CELL_SIZE, CELL_SIZE))
@@ -120,6 +122,7 @@ def main():
     CELL_SIZE = 20
     input_active_save = False
     input_active_load = False
+    positiom_mode = False
     input_text = ""
     font = pygame.font.Font(None, 36)
     #色
@@ -133,13 +136,15 @@ def main():
     #マップの設定
     display_map = [['w' for a in range(max_CELL_num[0])]for b in range(max_CELL_num[1])]
     
-
+    #直近のクリック位置保存(単位はドット)
+    recent_click_cell = [0,0]
 
 
     while True:
 
         print(f"\rsavemode ={input_active_save}             "
                f"loadmode ={input_active_load}            "
+               f"position_mode ={positiom_mode}           "
                f"input:{input_text}                        ",end = '',flush = True)
         
         
@@ -175,6 +180,7 @@ def main():
                 x, y = pygame.mouse.get_pos()
                 grid_x = (x // CELL_SIZE)+current_coordinates[0]
                 grid_y = (y // CELL_SIZE)+current_coordinates[1]
+                recent_click_cell = [grid_x,grid_y]
                 if current_color==RED:
                     display_map[grid_y][grid_x]='r'
                 elif current_color==BLUE:
@@ -213,9 +219,14 @@ def main():
                     input_active_load = True
                     input_active_save = False
                     input_text = ""
+                elif (event.key == pygame.K_p):
+                    positiom_mode = not(positiom_mode)
                 elif (event.key == pygame.K_RETURN) & (input_active_load == True):
                     input_active_load = False
-                    load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",display_map)
+                    if (positiom_mode):
+                        load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",display_map,recent_click_cell)
+                    else:
+                        load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",display_map,[0,0])
                 elif (event.key == pygame.K_l) & (input_active_load == True) :
                     input_active_load = False
                 elif (event.key == pygame.K_j) & (input_active_load == True) :
