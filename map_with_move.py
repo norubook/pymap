@@ -9,7 +9,7 @@
 '''
 現在状況
 
-できていないこと
+できたこと
 移動した場合のロードやセーブをどうするか(仮置きで全体保存全体ロードとして実装)
 
 任意の場所にロード
@@ -17,7 +17,8 @@
 任意の場所にロードした場合，もしくは通常サイズより大きいマップをロードした場合，
 　はみ出した部分だけ無視する方法
 
-
+できていないこと
+関連マップをロードした場合，同じ場所を再ロードしないようにする方法．
 
 '''
 
@@ -73,13 +74,18 @@ def save_grid(filename,CELL_SIZE,screen,name_data,wide,length,display_map):
 
 def load_ver2(map_info_row):
     #仮置き返り値
-    return_row = []
+    map_info =[]
+    connect_info ={}
 
-    for i in range(len(map_info_row)):
-        return_row.append(map_info_row[i])
+    for i in map_info_row[:2]:
+        map_info.append(i)
+    for k in map_info_row[3:]:
+        split_connect_info = k.split(':')
+        key,values = split_connect_info[0],split_connect_info[1:]
+        connect_info[key] = values
 
 
-    return return_row
+    return map_info,connect_info
 
 
 #loadの関数
@@ -93,7 +99,7 @@ def load_grid(filename,display_map,start_point):
             #サイズ変更後の処理を設定後下記を適用してサイズを取得してください
             map_info_row=next(reader)
             if(map_info_row[0]=="ver2"):
-                file_info =load_ver2(map_info_row)
+                map_info,connect_info =load_ver2(map_info_row)
                 
         
             for row in reader:
