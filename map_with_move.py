@@ -31,7 +31,7 @@ import csv
 
 SCREEN_SIZE = (500,500)
 
-current_coordinates=(0,0)
+current_coordinates=[0,0]
 
 #保存とロード
 #get_atではrgb+不透明度の形式で取得
@@ -151,7 +151,7 @@ def main():
                     else:
                         color_code =(255,255,255,255)
                     #描画位置拡張試し書き
-                    pygame.draw.rect(screen, color_code, ((i*CELL_SIZE)-(current_coordinates[0]*CELL_SIZE), (k*CELL_SIZE)-(current_coordinates[1]*CELL_SIZE), CELL_SIZE, CELL_SIZE))
+                    pygame.draw.rect(screen, color_code, (((i-current_coordinates[0])*CELL_SIZE), ((k-current_coordinates[1])*CELL_SIZE), CELL_SIZE, CELL_SIZE))
                     #pygame.draw.rect(screen, color_code, ((i*CELL_SIZE), k*CELL_SIZE, CELL_SIZE, CELL_SIZE))
         
         
@@ -210,6 +210,14 @@ def main():
                     input_active_load = False
                 elif (event.key == pygame.K_j) & (input_active_load == True) :
                     print(display_map)
+                elif (event.key == pygame.K_LEFT):
+                    current_coordinates[0] -= 1
+                elif (event.key == pygame.K_RIGHT):
+                    current_coordinates[0] += 1
+                elif (event.key == pygame.K_UP):
+                    current_coordinates[1] -= 1
+                elif (event.key == pygame.K_DOWN):
+                    current_coordinates[1] += 1
 
         pygame.display.flip()
             
