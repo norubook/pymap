@@ -34,9 +34,8 @@ import csv
 
 SCREEN_SIZE = [500,500]
 
-current_coordinates=[0,0]
 
-max_CELL_num = [50,50]
+
 
 #カラーコード
 color_code={
@@ -93,7 +92,7 @@ def load_ver2(map_info_row):
 
 #loadの関数
 
-def load_grid(filename,display_map,start_point):
+def load_grid(filename,display_map,start_point,max_CELL_num):
     global grid
     try:
         with open(filename, "r",newline="") as f:
@@ -141,8 +140,15 @@ def main():
     GREEN = (0, 255, 0)
     BLUE  = (0, 0, 255)
 
+    #現在地
+    
+    current_coordinates=[0,0]
+
+
+
 
     #マップの設定
+    max_CELL_num = [SCREEN_SIZE[0]//CELL_SIZE*2,SCREEN_SIZE[1]//CELL_SIZE*2]
     display_map = [['w' for a in range(max_CELL_num[0])]for b in range(max_CELL_num[1])]
     
     #直近のクリック位置保存(単位はドット)
@@ -151,10 +157,8 @@ def main():
 
     while True:
 
-        print(f"\rsavemode ={input_active_save}             "
-               f"loadmode ={input_active_load}            "
-               f"position_mode ={positiom_mode}           "
-               f"input:{input_text}                        ",end = '',flush = True)
+        print(f"\rsavemode={input_active_save} loadmode={input_active_load} option={'p' if positiom_mode else '0-0'}   "
+               f"input:{input_text}                                           ",end = '',flush = True)
         
         
         
@@ -215,27 +219,27 @@ def main():
                     current_color = BLUE
                 elif event.key == pygame.K_w:
                     current_color = WHITE
-                elif (event.key == pygame.K_s) & (input_active_save == False):
-                    input_active_save = True
-                    input_active_load = False
+                elif (event.key == pygame.K_1):
+                    if (input_active_save==False):
+                        input_active_load = False
+                    input_active_save= not(input_active_save)
                     input_text = ""
                 elif (event.key == pygame.K_RETURN) & (input_active_save == True):
                     input_active_save = False
                     save_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",CELL_SIZE,screen,input_text,1000,1000,display_map)
-                elif (event.key == pygame.K_s) & (input_active_save == True):
-                    input_active_save = False
-                elif (event.key == pygame.K_l) & (input_active_load == False) :
-                    input_active_load = True
-                    input_active_save = False
+                elif (event.key == pygame.K_2):
+                    if(input_active_load==False):
+                        input_active_save = False
+                    input_active_load= not(input_active_load)
                     input_text = ""
-                elif (event.key == pygame.K_p):
+                elif (event.key == pygame.K_3):
                     positiom_mode = not(positiom_mode)
                 elif (event.key == pygame.K_RETURN) & (input_active_load == True):
                     input_active_load = False
                     if (positiom_mode):
-                        load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",display_map,recent_click_cell)
+                        load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",display_map,recent_click_cell,max_CELL_num)
                     else:
-                        load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",display_map,[0,0])
+                        load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",display_map,[0,0],max_CELL_num)
                 elif (event.key == pygame.K_l) & (input_active_load == True) :
                     input_active_load = False
                 elif (event.key == pygame.K_j) & (input_active_load == True) :
