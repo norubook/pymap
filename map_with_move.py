@@ -10,8 +10,7 @@
 現在状況
 
 できていないこと
-マップの移動
-移動した場合のロードやセーブをどうするか
+移動した場合のロードやセーブをどうするか(仮置きで全体保存全体ロードとして実装)
 
 任意の場所にロード
 
@@ -29,12 +28,11 @@ from pygame.locals import*
 import json
 import csv
 
-SCREEN_SIZE = (500,500)
+SCREEN_SIZE = [500,500]
 
 current_coordinates=[0,0]
 
-max_CELL_x_num = 50
-max_CELL_y_num = 50
+max_CELL_num = [50,50]
 
 #カラーコード
 color_code={
@@ -133,7 +131,7 @@ def main():
 
 
     #マップの設定
-    display_map = [['w' for a in range(max_CELL_x_num)]for b in range(max_CELL_y_num)]
+    display_map = [['w' for a in range(max_CELL_num[0])]for b in range(max_CELL_num[1])]
     
 
 
@@ -146,8 +144,8 @@ def main():
         
         
         
-        for k in range(max_CELL_y_num):
-                for i in range(max_CELL_x_num):
+        for k in range(max_CELL_num[1]):
+                for i in range(max_CELL_num[0]):
                     cell_col = display_map[k][i]
                     '''
                     以下if文でコード振り分けする場合の文章
@@ -224,11 +222,11 @@ def main():
                     print(display_map)
                 elif (event.key == pygame.K_LEFT) & (current_coordinates[0]>0):
                     current_coordinates[0] -= 1
-                elif (event.key == pygame.K_RIGHT) & (current_coordinates[0]<(max_CELL_x_num-(SCREEN_SIZE[0]//CELL_SIZE))):
+                elif (event.key == pygame.K_RIGHT) & (current_coordinates[0]<(max_CELL_num[0]-(SCREEN_SIZE[0]//CELL_SIZE))):
                     current_coordinates[0] += 1
                 elif (event.key == pygame.K_UP) & (current_coordinates[1]>0):
                     current_coordinates[1] -= 1
-                elif (event.key == pygame.K_DOWN) & (current_coordinates[1]<(max_CELL_y_num-(SCREEN_SIZE[1]//CELL_SIZE))):
+                elif (event.key == pygame.K_DOWN) & (current_coordinates[1]<(max_CELL_num[1]-(SCREEN_SIZE[1]//CELL_SIZE))):
                     current_coordinates[1] += 1
 
         pygame.display.flip()
