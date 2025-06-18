@@ -155,14 +155,20 @@ def main():
     recent_click_cell = [0,0]
 
 
+    #現在map表示しているのか階層表示しているのかを表す変数
+    state_map = "map"
+    state_hierarchy = "hierarchy"
+    current_state = state_map
+
+
     while True:
 
         print(f"\rsavemode={input_active_save} loadmode={input_active_load} option={'p' if positiom_mode else '0-0'}   "
                f"input:{input_text}                                           ",end = '',flush = True)
         
         
-        
-        for k in range(max_CELL_num[1]):
+        if (current_state == state_map):
+            for k in range(max_CELL_num[1]):
                 for i in range(max_CELL_num[0]):
                     cell_col = display_map[k][i]
                     '''
@@ -184,6 +190,10 @@ def main():
                     pygame.draw.rect(screen, color, (((i-current_coordinates[0])*CELL_SIZE), ((k-current_coordinates[1])*CELL_SIZE), CELL_SIZE, CELL_SIZE))
                     #pygame.draw.rect(screen, color_code, ((i*CELL_SIZE), k*CELL_SIZE, CELL_SIZE, CELL_SIZE))
         
+
+        if (current_state == state_hierarchy):
+            a= True
+
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
