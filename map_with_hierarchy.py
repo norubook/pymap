@@ -173,7 +173,7 @@ def main():
     #初期化
     pygame.init()
     screen = pygame.display.set_mode(SCREEN_SIZE)
-    pygame.display.set_caption("pymap ver2.1")
+    pygame.display.set_caption("pymap ver2.2")
     screen.fill((255,255,255))
     current_color = (255, 0, 0)
     CELL_SIZE = 20
@@ -182,6 +182,7 @@ def main():
     positiom_mode = False
     input_text = ""
     font = pygame.font.Font(None, 36)
+    clock = pygame.time.Clock()
     #色
 
     WHITE = (255, 255, 255)
@@ -226,6 +227,7 @@ def main():
 
 
     while True:
+        clock.tick(30)
 
         print(f"\rsavemode={input_save_mode}, loadmode={input_load_mode}, option={'p' if positiom_mode else '0-0'},  "
                f"hierarchy=:{stock_hierarchy},  input:{input_text}                 ",end = '',flush = True)
@@ -335,7 +337,10 @@ def main():
                         load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",display_map,[0,0],max_CELL_num)
                 elif (event.key == pygame.K_RETURN) & (hierarchy_mode == True):
                     hierarchy_mode = False
-                    stock_hierarchy = input_text
+                    if(input_text!=""):
+                        stock_hierarchy = input_text
+                    else:
+                        stock_hierarchy = "None"
                 elif (event.key == pygame.K_4):
                     if(hierarchy_mode==False):
                         input_save_mode = False
@@ -343,7 +348,7 @@ def main():
                     hierarchy_mode = not(hierarchy_mode)
                     input_text = ""
                 elif (event.key == pygame.K_5) & (stock_hierarchy!="None"):
-                    screen.fill(255,255,255,255)
+                    screen.fill((255,255,255))
                     is_exist_hierarchy,num_hierarchy,map_name_datas=status_hierarchy(stock_hierarchy)
                     if(is_exist_hierarchy):
                         current_state=state_hierarchy
