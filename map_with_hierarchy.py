@@ -216,18 +216,19 @@ def main():
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
-                grid_x = (x // CELL_SIZE)+current_coordinates[0]
-                grid_y = (y // CELL_SIZE)+current_coordinates[1]
-                recent_click_cell = [grid_x,grid_y]
-                if current_color==RED:
-                    display_map[grid_y][grid_x]='r'
-                elif current_color==BLUE:
-                    display_map[grid_y][grid_x]='b'   
-                elif current_color==WHITE:
-                    display_map[grid_y][grid_x]='w'
-                elif current_color==GREEN:
-                    display_map[grid_y][grid_x]='g' 
-                #pygame.draw.rect(screen, current_color, (grid_x*CELL_SIZE, grid_y*CELL_SIZE, CELL_SIZE, CELL_SIZE))
+                if current_state==state_map:
+                    grid_x = (x // CELL_SIZE)+current_coordinates[0]
+                    grid_y = (y // CELL_SIZE)+current_coordinates[1]
+                    recent_click_cell = [grid_x,grid_y]
+                    if current_color==RED:
+                        display_map[grid_y][grid_x]='r' 
+                    elif current_color==BLUE:
+                        display_map[grid_y][grid_x]='b'   
+                    elif current_color==WHITE:
+                        display_map[grid_y][grid_x]='w'
+                    elif current_color==GREEN:
+                        display_map[grid_y][grid_x]='g' 
+                    #pygame.draw.rect(screen, current_color, (grid_x*CELL_SIZE, grid_y*CELL_SIZE, CELL_SIZE, CELL_SIZE))
 
             # キーで色変更
             elif event.type == pygame.KEYDOWN:
