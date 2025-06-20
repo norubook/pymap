@@ -115,9 +115,9 @@ def load_grid(filename,display_map,start_point,max_CELL_num):
                     #pygame.draw.rect(screen, color_code, ((i*CELL_SIZE), k*CELL_SIZE, CELL_SIZE, CELL_SIZE))
                 k+=1
 
-        print("読み込み完了。")
+        print("\r読み込み完了。             ",end = '',flush = True)
     except FileNotFoundError:
-        print("保存ファイルが見つかりませんでした。")
+        print("\r保存ファイルが見つかりませんでした。               ",end = '',flush = True)
 
 def load_hierarchy(hierarchy_csv):
     try:
@@ -171,7 +171,7 @@ def main():
     #現在map表示しているのか階層表示しているのかを表す変数
     state_map = "map"
     state_hierarchy = "hierarchy"
-    current_state = state_map
+    current_state = state_hierarchy
 
     #階層構造の初期設定
     hierarchy_buttons = []
@@ -196,7 +196,7 @@ def main():
             hierarchy_button_x = 100 + (i % 3) * (button_width + padding)
             hierarchy_button_y = 100 + (i // 3) * (button_height + padding)
             rect = pygame.Rect(hierarchy_button_x, hierarchy_button_y, button_width, button_height)
-            hierarchy_buttons.append({"rect": rect, "stage_id": i})
+            hierarchy_buttons.append({"rect": rect, "stage_id": i , "map_loc": f"pymap/pymap/mapdata_{map_name_datas[i]}.csv"})
         
         
         if (current_state == state_map):
@@ -252,8 +252,8 @@ def main():
                 if current_state==state_hierarchy:
                     for button in hierarchy_buttons:
                         if button["rect"].collidepoint(event.pos):
-                            current_hierarchy = button["stage_id"]
-                            current_state = state_hierarchy
+                            load_grid(button["map_loc"],display_map,[0,0],max_CELL_num)
+                            current_state = state_map
 
 
             # キーで色変更
