@@ -119,6 +119,19 @@ def load_grid(filename,display_map,start_point,max_CELL_num):
     except FileNotFoundError:
         print("保存ファイルが見つかりませんでした。")
 
+def load_hierarchy(hierarchy_csv):
+    try:
+        with open(hierarchy_csv, "r",newline="") as f:
+            reader = csv.reader(f)
+            #サイズ変更後の処理を設定後下記を適用してサイズを取得してください
+            hierarchy_info_row=next(reader)
+            map_info_row=next(reader)
+
+        return int(hierarchy_info_row[2]),map_info_row
+    except FileNotFoundError:
+        return 0
+
+
 def main():
 
     #初期化
@@ -167,6 +180,10 @@ def main():
     button_height = 60
     padding = 20
 
+    #csvから階層構造データの読み取り
+    num_hierarchy,map_name_datas =load_hierarchy("pymap/pymap/hierarchy_sample_v2.2.csv")
+
+
 
 
     while True:
@@ -207,7 +224,10 @@ def main():
         
 
         if (current_state == state_hierarchy):
-            a= True
+            for button in hierarchy_buttons:
+                pygame.draw.rect(screen, BLUE, button["rect"])
+                text = font.render(f"hierarchy {button['stage_id']}F", True, WHITE)
+                screen.blit(text, (button["rect"].x + 20, button["rect"].y + 15))
 
         
         for event in pygame.event.get():
@@ -230,7 +250,11 @@ def main():
                         display_map[grid_y][grid_x]='g' 
                     #pygame.draw.rect(screen, current_color, (grid_x*CELL_SIZE, grid_y*CELL_SIZE, CELL_SIZE, CELL_SIZE))
                 if current_state==state_hierarchy:
-                    a = True
+                    for button in hierarchy_buttons:
+                        if button["rect"].collidepoint(event.pos):
+                            current_hierarchy = button["stage_id"]
+                            current_state = state_hierarchy
+
 
             # キーで色変更
             elif event.type == pygame.KEYDOWN:
