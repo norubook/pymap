@@ -115,9 +115,22 @@ def load_grid(filename,display_map,start_point,max_CELL_num):
                     #pygame.draw.rect(screen, color_code, ((i*CELL_SIZE), k*CELL_SIZE, CELL_SIZE, CELL_SIZE))
                 k+=1
 
-        print("読み込み完了。")
+        print("\r読み込み完了。             ",end = '',flush = True)
     except FileNotFoundError:
-        print("保存ファイルが見つかりませんでした。")
+        print("\r保存ファイルが見つかりませんでした。               ",end = '',flush = True)
+
+def load_hierarchy(hierarchy_csv):
+    try:
+        with open(hierarchy_csv, "r",newline="") as f:
+            reader = csv.reader(f)
+            #サイズ変更後の処理を設定後下記を適用してサイズを取得してください
+            hierarchy_info_row=next(reader)
+            map_info_row=next(reader)
+
+        return int(hierarchy_info_row[2]),map_info_row
+    except FileNotFoundError:
+        return 0
+
 
 def main():
 
@@ -158,7 +171,7 @@ def main():
     #現在map表示しているのか階層表示しているのかを表す変数
     state_map = "map"
     state_hierarchy = "hierarchy"
-    current_state = state_map
+    current_state = state_hierarchy
 
     #階層構造の初期設定
     hierarchy_buttons = []
@@ -166,6 +179,10 @@ def main():
     button_width = 200
     button_height = 60
     padding = 20
+
+    #csvから階層構造データの読み取り
+    num_hierarchy,map_name_datas =load_hierarchy("pymap/pymap/hierarchy_sample_v2.2.csv")
+
 
 
 
@@ -179,7 +196,7 @@ def main():
             hierarchy_button_x = 100 + (i % 3) * (button_width + padding)
             hierarchy_button_y = 100 + (i // 3) * (button_height + padding)
             rect = pygame.Rect(hierarchy_button_x, hierarchy_button_y, button_width, button_height)
-            hierarchy_buttons.append({"rect": rect, "stage_id": i})
+            hierarchy_buttons.append({"rect": rect, "stage_id": i , "map_loc": f"pymap/pymap/mapdata_{map_name_datas[i]}.csv"})
         
         
         if (current_state == state_map):
@@ -207,7 +224,10 @@ def main():
         
 
         if (current_state == state_hierarchy):
-            a= True
+            for button in hierarchy_buttons:
+                pygame.draw.rect(screen, BLUE, button["rect"])
+                text = font.render(f"hierarchy {button['stage_id']}F", True, WHITE)
+                screen.blit(text, (button["rect"].x + 20, button["rect"].y + 15))
 
         
         for event in pygame.event.get():
@@ -229,6 +249,12 @@ def main():
                     elif current_color==GREEN:
                         display_map[grid_y][grid_x]='g' 
                     #pygame.draw.rect(screen, current_color, (grid_x*CELL_SIZE, grid_y*CELL_SIZE, CELL_SIZE, CELL_SIZE))
+                if current_state==state_hierarchy:
+                    for button in hierarchy_buttons:
+                        if button["rect"].collidepoint(event.pos):
+                            load_grid(button["map_loc"],display_map,[0,0],max_CELL_num)
+                            current_state = state_map
+
 
             # キーで色変更
             elif event.type == pygame.KEYDOWN:
