@@ -1,5 +1,5 @@
-ver2,abc,1000,1000
-b,b,b,b,b,b,b,b,b,b,b,b,r,r,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b
+ver2,abcdef,1000,1000
+r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r
 b,g,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,g,b,b,g,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,g,b
 b,w,r,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,r,w,b,b,w,r,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,r,w,b
 b,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,b,b,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,b
@@ -48,4 +48,4 @@ b,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,b,b,w,w,w,w,w,w,w,w,w,w,w,w,w,w,
 b,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,b,b,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,b
 b,w,r,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,r,w,b,b,w,r,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,r,w,b
 b,g,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,g,b,b,g,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,g,b
-b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b
+r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r
