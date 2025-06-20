@@ -229,6 +229,8 @@ def main():
                     elif current_color==GREEN:
                         display_map[grid_y][grid_x]='g' 
                     #pygame.draw.rect(screen, current_color, (grid_x*CELL_SIZE, grid_y*CELL_SIZE, CELL_SIZE, CELL_SIZE))
+                if current_state==state_hierarchy:
+                    a = True
 
             # キーで色変更
             elif event.type == pygame.KEYDOWN:
