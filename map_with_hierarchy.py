@@ -124,7 +124,7 @@ def main():
     #初期化
     pygame.init()
     screen = pygame.display.set_mode(SCREEN_SIZE)
-    pygame.display.set_caption("色記述サンプル")
+    pygame.display.set_caption("pymap ver2.1")
     screen.fill((255,255,255))
     current_color = (255, 0, 0)
     CELL_SIZE = 20
@@ -160,11 +160,26 @@ def main():
     state_hierarchy = "hierarchy"
     current_state = state_map
 
+    #階層構造の初期設定
+    hierarchy_buttons = []
+    num_hierarchy = 1
+    button_width = 200
+    button_height = 60
+    padding = 20
+
+
 
     while True:
 
         print(f"\rsavemode={input_active_save} loadmode={input_active_load} option={'p' if positiom_mode else '0-0'}   "
                f"input:{input_text}                                           ",end = '',flush = True)
+        
+        #階層構造表示用の仕組み仮置き場
+        for i in range(num_hierarchy):
+            hierarchy_button_x = 100 + (i % 3) * (button_width + padding)
+            hierarchy_button_y = 100 + (i // 3) * (button_height + padding)
+            rect = pygame.Rect(hierarchy_button_x, hierarchy_button_y, button_width, button_height)
+            hierarchy_buttons.append({"rect": rect, "stage_id": i})
         
         
         if (current_state == state_map):
