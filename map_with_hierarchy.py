@@ -160,7 +160,7 @@ def load_hierarchy(hierarchy_csv):
 
         return 1,int(hierarchy_info_row[2]),map_info_row
     except FileNotFoundError:
-        return 0
+        return 0,0,["None"]
 
 def status_hierarchy(hierarchy_name):
     hierarchy_file_pass =f"pymap/pymap/hierarchy_{hierarchy_name}.csv"
@@ -352,6 +352,8 @@ def main():
                     is_exist_hierarchy,num_hierarchy,map_name_datas=status_hierarchy(stock_hierarchy)
                     if(is_exist_hierarchy):
                         current_state=state_hierarchy
+                    else:
+                        stock_hierarchy="None"
                         
                 elif (event.key == pygame.K_LEFT) & (current_coordinates[0]>0):
                     current_coordinates[0] -= 1
