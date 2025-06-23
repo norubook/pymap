@@ -45,10 +45,10 @@ SCREEN_SIZE = [500,500]
 
 #カラーコード
 color_code={
-    "w":(255,255,255,255),
-    "r":(255,0,0,255),
-    "g":(0,255,0,255),
-    "b":(0,0,255,255),
+    'w':(255,255,255,255),
+    'r':(255,0,0,255),
+    'g':(0,255,0,255),
+    'b':(0,0,255,255),
 }
 
 reverse_color_code ={v:k for (k,v) in color_code.items()}
@@ -100,9 +100,6 @@ def save_grid(filename,CELL_SIZE,screen,name_data,wide,length,display_map,hierar
             writer.writerow(list)
         if(hierarchy_name!="None"):
             save_hierarchy(hierarchy_name,map_name)
-
-
-
     print("保存しました。")
 
 
