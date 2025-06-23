@@ -33,6 +33,18 @@
 
 '''
 
+'''
+これからの作業計画
+
+modesのうちpositionを可変にする．
+positionの値を再入する変数を用意する．
+変数は[int,int]で入力させるようにする．
+load_gridのstart_pointに上記の組み合わせを送るようにする
+'''
+
+
+
+
 
 import pygame
 import sys
@@ -142,8 +154,7 @@ def load_grid(filename,display_map,start_point,max_CELL_num):
             map_info_row=next(reader)
             if(map_info_row[0]=="ver2"):
                 map_info,connect_info =load_ver2(map_info_row)
-                
-        
+            
             for row in reader:
                 for i in range(len(row)):
                     cell_col = row[i]
@@ -325,6 +336,7 @@ def main():
                     modes["input_load"]= not(modes["input_load"])
                     input_text = ""
                 elif (event.key == pygame.K_3):
+
                     modes["position"] = not(modes["position"])
                 elif (event.key == pygame.K_4):
                     if(modes["hierarchy"]==False):
