@@ -272,15 +272,6 @@ def main():
                     grid_x = (x // CELL_SIZE)+current_coordinates[0]
                     grid_y = (y // CELL_SIZE)+current_coordinates[1]
                     recent_click_cell = [grid_x,grid_y]
-                    '''
-                    if current_color==RED:
-                        display_map[grid_y][grid_x]='r' 
-                    elif current_color==BLUE:
-                        display_map[grid_y][grid_x]='b'   
-                    elif current_color==WHITE:
-                        display_map[grid_y][grid_x]='w'
-                    elif current_color==GREEN:
-                        display_map[grid_y][grid_x]='g' '''
                     display_map[grid_y][grid_x]=reverse_color_code.get(current_color,'w')
                     
                     #pygame.draw.rect(screen, current_color, (grid_x*CELL_SIZE, grid_y*CELL_SIZE, CELL_SIZE, CELL_SIZE))
