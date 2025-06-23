@@ -57,6 +57,13 @@ color_code={
 reverse_color_code ={v:k for (k,v) in color_code.items()}
 
 
+def all_mode_off():
+    global input_save_mode
+    global input_load_mode
+    global positiom_mode 
+    input_save_mode = False
+    input_load_mode = False
+    positiom_mode = False
 
 #保存とロード
 #get_atではrgb+不透明度の形式で取得
@@ -173,6 +180,9 @@ def status_hierarchy(hierarchy_name):
     return is_exist_hierarchy,num_hierarchy,map_name_datas
 
 
+
+
+
 def main():
 
     #初期化
@@ -182,9 +192,6 @@ def main():
     screen.fill((255,255,255))
     current_color = (255, 0, 0,255)
     CELL_SIZE = 20
-    input_save_mode = False
-    input_load_mode = False
-    positiom_mode = False
     input_text = ""
     font = pygame.font.Font(None, 36)
     clock = pygame.time.Clock()
@@ -201,6 +208,13 @@ def main():
     
     current_coordinates=[0,0]
 
+    #モード
+    modes ={
+    "input_save": False,
+    "input_load" : False,
+    "position" : False,
+    "limited_save" :False
+    }
 
 
 
@@ -240,8 +254,8 @@ def main():
     while True:
         clock.tick(30)
 
-        print(f"\rsavemode={input_save_mode}, loadmode={input_load_mode}, option={'p' if positiom_mode else '0-0'},  "
-               f"hierarchy=:{stock_hierarchy},  input:{input_text}                 ",end = '',flush = True)
+        print(f"\rsavemode={modes["input_save"]}, loadmode={modes["input_load"]}, option={'p' if modes["position"] else '0-0'},  "
+               f"hierarchy=:{stock_hierarchy}, save_limited500={modes["limited_save"]} input:{input_text}                 ",end = '',flush = True)
         
         #階層構造表示用の仕組み仮置き場
         for i in range(num_hierarchy):
@@ -290,7 +304,7 @@ def main():
 
             # キーで色変更
             elif event.type == pygame.KEYDOWN:
-                if ((input_save_mode) | (input_load_mode) |(hierarchy_mode)) & (event.key != pygame.K_RETURN):#ENTERキーはエラーを発生させるため入力から除外すること
+                if ((modes["input_save"]) | (modes["input_load"]) |(modes["hierarchy"])) & (event.key != pygame.K_RETURN):#ENTERキーはエラーを発生させるため入力から除外すること
                     if event.key== pygame.K_BACKSPACE:
                         input_text = input_text[:-1]
                     else:
@@ -304,22 +318,21 @@ def main():
                 elif event.key == pygame.K_w:
                     current_color = WHITE
                 elif (event.key == pygame.K_1):
+                    '''ここ以降のmodeを辞書形式に修正すること'''
                     if (input_save_mode==False):
-                        input_load_mode = False
+                        all_mode_off()
                     input_save_mode= not(input_save_mode)
                     input_text = ""
                 elif (event.key == pygame.K_2):
                     if(input_load_mode==False):
-                        input_save_mode = False
-                        hierarchy_mode = False
+                        all_mode_off
                     input_load_mode= not(input_load_mode)
                     input_text = ""
                 elif (event.key == pygame.K_3):
                     positiom_mode = not(positiom_mode)
                 elif (event.key == pygame.K_4):
                     if(hierarchy_mode==False):
-                        input_save_mode = False
-                        input_load_mode = False
+                        all_mode_off()
                     hierarchy_mode = not(hierarchy_mode)
                     input_text = ""
                 elif (event.key == pygame.K_5) & (stock_hierarchy!="None"):
@@ -329,9 +342,14 @@ def main():
                         current_state=state_hierarchy
                     else:
                         stock_hierarchy="None"
+                elif(event.key== pygame.K_6):
+                    limited_save_mode = (limited_save_mode)
                 elif (event.key == pygame.K_RETURN) & (input_save_mode == True):
                     input_save_mode = False
-                    save_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",CELL_SIZE,screen,input_text,1000,1000,display_map,stock_hierarchy,f"v2_{input_text}")
+                    if limited_save_mode:
+                        save_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",CELL_SIZE,screen,input_text,500,500,display_map,stock_hierarchy,f"v2_{input_text}")
+                    else:
+                        save_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",CELL_SIZE,screen,input_text,1000,1000,display_map,stock_hierarchy,f"v2_{input_text}")
                     stock_hierarchy = "None"
                 elif (event.key == pygame.K_RETURN) & (input_load_mode == True):
                     input_load_mode = False
