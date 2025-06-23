@@ -28,6 +28,8 @@
 (ドット単位でのセーブ)
 
 関連マップをロードした場合，同じ場所を再ロードしないようにする方法．
+(サブマップを三次元配列で呼び出すか？)
+
 
 '''
 
@@ -49,6 +51,7 @@ color_code={
     'r':(255,0,0,255),
     'g':(0,255,0,255),
     'b':(0,0,255,255),
+    'n':(0,0,0,0)
 }
 
 reverse_color_code ={v:k for (k,v) in color_code.items()}
@@ -192,6 +195,8 @@ def main():
     GREEN = (0, 255, 0,255)
     BLUE  = (0, 0, 255,255)
 
+    NONE = (0,0,0,0)
+
     #現在地
     
     current_coordinates=[0,0]
@@ -200,8 +205,12 @@ def main():
 
 
     #マップの設定
-    max_CELL_num = [SCREEN_SIZE[0]//CELL_SIZE*2,SCREEN_SIZE[1]//CELL_SIZE*2]
+    map_dot_num = [1000,1000]
+    #max_CELL_num = [SCREEN_SIZE[0]//CELL_SIZE*2,SCREEN_SIZE[1]//CELL_SIZE*2]
+    max_CELL_num = [map_dot_num[0]//CELL_SIZE*2,map_dot_num[1]//CELL_SIZE*2]
     display_map = [['w' for a in range(max_CELL_num[0])]for b in range(max_CELL_num[1])]
+
+    sub_map = [['N' for a in range(max_CELL_num[0])]for b in range(max_CELL_num[1])]
     
     #直近のクリック位置保存(単位はドット)
     recent_click_cell = [0,0]
