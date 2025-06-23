@@ -322,7 +322,7 @@ def main():
                 elif (event.key == pygame.K_2):
                     if(modes["input_load"]==False):
                         all_mode_off(modes)
-                    modes["input_lode"]= not(modes["input_load"])
+                    modes["input_load"]= not(modes["input_load"])
                     input_text = ""
                 elif (event.key == pygame.K_3):
                     modes["position"] = not(modes["position"])
