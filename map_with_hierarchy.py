@@ -17,9 +17,15 @@
 任意の場所にロードした場合，もしくは通常サイズより大きいマップをロードした場合，
 　はみ出した部分だけ無視する方法
 
+階層表示
+
 できていないこと
 
-階層表示
+拡大縮小
+
+任意の場所をセーブ
+
+(ドット単位でのセーブ)
 
 関連マップをロードした場合，同じ場所を再ロードしないようにする方法．
 
@@ -39,11 +45,13 @@ SCREEN_SIZE = [500,500]
 
 #カラーコード
 color_code={
-    'w':(255,255,255,255),
-    'r':(255,0,0,255),
-    'g':(0,255,0,255),
-    'b':(0,0,255,255),
+    "w":(255,255,255,255),
+    "r":(255,0,0,255),
+    "g":(0,255,0,255),
+    "b":(0,0,255,255),
 }
+
+reverse_color_code ={v:k for (k,v) in color_code.items()}
 
 
 
@@ -84,10 +92,7 @@ def save_grid(filename,CELL_SIZE,screen,name_data,wide,length,display_map,hierar
         list =[]
         writer = csv.writer(f)
         #1行目データ
-        list.append("ver2")
-        list.append(name_data)
-        list.append(wide)
-        list.append(length)
+        list.extend(["ver2",name_data,wide,length])
         writer.writerow(list)
         list=[]
         for i in range(length//CELL_SIZE):
@@ -175,7 +180,7 @@ def main():
     screen = pygame.display.set_mode(SCREEN_SIZE)
     pygame.display.set_caption("pymap ver2.2")
     screen.fill((255,255,255))
-    current_color = (255, 0, 0)
+    current_color = (255, 0, 0,255)
     CELL_SIZE = 20
     input_save_mode = False
     input_load_mode = False
@@ -185,10 +190,10 @@ def main():
     clock = pygame.time.Clock()
     #色
 
-    WHITE = (255, 255, 255)
-    RED   = (255, 0, 0)
-    GREEN = (0, 255, 0)
-    BLUE  = (0, 0, 255)
+    WHITE = (255, 255, 255,255)
+    RED   = (255, 0, 0,255)
+    GREEN = (0, 255, 0,255)
+    BLUE  = (0, 0, 255,255)
 
     #現在地
     
@@ -244,20 +249,6 @@ def main():
             for k in range(max_CELL_num[1]):
                 for i in range(max_CELL_num[0]):
                     cell_col = display_map[k][i]
-                    '''
-                    以下if文でコード振り分けする場合の文章
-                    color_code =(0,0,0,0)
-                    if cell_col =='w':
-                        color_code =(255,255,255,255)
-                    elif cell_col =='r':
-                        color_code =(255,0,0,255)
-                    elif cell_col =='g':
-                        color_code =(0,255,0,255)
-                    elif cell_col =='b':
-                        color_code =(0,0,255,255)
-                    else:
-                        color_code =(255,255,255,255)
-                    '''
                     color=color_code.get(cell_col,(255,255,255,255))
                     #描画位置拡張試し書き
                     pygame.draw.rect(screen, color, (((i-current_coordinates[0])*CELL_SIZE), ((k-current_coordinates[1])*CELL_SIZE), CELL_SIZE, CELL_SIZE))
@@ -281,14 +272,8 @@ def main():
                     grid_x = (x // CELL_SIZE)+current_coordinates[0]
                     grid_y = (y // CELL_SIZE)+current_coordinates[1]
                     recent_click_cell = [grid_x,grid_y]
-                    if current_color==RED:
-                        display_map[grid_y][grid_x]='r' 
-                    elif current_color==BLUE:
-                        display_map[grid_y][grid_x]='b'   
-                    elif current_color==WHITE:
-                        display_map[grid_y][grid_x]='w'
-                    elif current_color==GREEN:
-                        display_map[grid_y][grid_x]='g' 
+                    display_map[grid_y][grid_x]=reverse_color_code.get(current_color,'w')
+                    
                     #pygame.draw.rect(screen, current_color, (grid_x*CELL_SIZE, grid_y*CELL_SIZE, CELL_SIZE, CELL_SIZE))
                 if current_state==state_hierarchy:
                     for button in hierarchy_buttons:
@@ -317,10 +302,6 @@ def main():
                         input_load_mode = False
                     input_save_mode= not(input_save_mode)
                     input_text = ""
-                elif (event.key == pygame.K_RETURN) & (input_save_mode == True):
-                    input_save_mode = False
-                    save_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",CELL_SIZE,screen,input_text,1000,1000,display_map,stock_hierarchy,f"v2_{input_text}")
-                    stock_hierarchy = "None"
                 elif (event.key == pygame.K_2):
                     if(input_load_mode==False):
                         input_save_mode = False
@@ -329,18 +310,6 @@ def main():
                     input_text = ""
                 elif (event.key == pygame.K_3):
                     positiom_mode = not(positiom_mode)
-                elif (event.key == pygame.K_RETURN) & (input_load_mode == True):
-                    input_load_mode = False
-                    if (positiom_mode):
-                        load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",display_map,recent_click_cell,max_CELL_num)
-                    else:
-                        load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",display_map,[0,0],max_CELL_num)
-                elif (event.key == pygame.K_RETURN) & (hierarchy_mode == True):
-                    hierarchy_mode = False
-                    if(input_text!=""):
-                        stock_hierarchy = input_text
-                    else:
-                        stock_hierarchy = "None"
                 elif (event.key == pygame.K_4):
                     if(hierarchy_mode==False):
                         input_save_mode = False
@@ -354,6 +323,22 @@ def main():
                         current_state=state_hierarchy
                     else:
                         stock_hierarchy="None"
+                elif (event.key == pygame.K_RETURN) & (input_save_mode == True):
+                    input_save_mode = False
+                    save_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",CELL_SIZE,screen,input_text,1000,1000,display_map,stock_hierarchy,f"v2_{input_text}")
+                    stock_hierarchy = "None"
+                elif (event.key == pygame.K_RETURN) & (input_load_mode == True):
+                    input_load_mode = False
+                    if (positiom_mode):
+                        load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",display_map,recent_click_cell,max_CELL_num)
+                    else:
+                        load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",display_map,[0,0],max_CELL_num)
+                elif (event.key == pygame.K_RETURN) & (hierarchy_mode == True):
+                    hierarchy_mode = False
+                    if(input_text!=""):
+                        stock_hierarchy = input_text
+                    else:
+                        stock_hierarchy = "None"
                         
                 elif (event.key == pygame.K_LEFT) & (current_coordinates[0]>0):
                     current_coordinates[0] -= 1
