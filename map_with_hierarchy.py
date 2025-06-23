@@ -45,11 +45,13 @@ SCREEN_SIZE = [500,500]
 
 #カラーコード
 color_code={
-    'w':(255,255,255,255),
-    'r':(255,0,0,255),
-    'g':(0,255,0,255),
-    'b':(0,0,255,255),
+    "w":(255,255,255,255),
+    "r":(255,0,0,255),
+    "g":(0,255,0,255),
+    "b":(0,0,255,255),
 }
+
+reverse_color_code ={v:k for (k,v) in color_code.items()}
 
 
 
@@ -178,7 +180,7 @@ def main():
     screen = pygame.display.set_mode(SCREEN_SIZE)
     pygame.display.set_caption("pymap ver2.2")
     screen.fill((255,255,255))
-    current_color = (255, 0, 0)
+    current_color = (255, 0, 0,255)
     CELL_SIZE = 20
     input_save_mode = False
     input_load_mode = False
@@ -188,10 +190,10 @@ def main():
     clock = pygame.time.Clock()
     #色
 
-    WHITE = (255, 255, 255)
-    RED   = (255, 0, 0)
-    GREEN = (0, 255, 0)
-    BLUE  = (0, 0, 255)
+    WHITE = (255, 255, 255,255)
+    RED   = (255, 0, 0,255)
+    GREEN = (0, 255, 0,255)
+    BLUE  = (0, 0, 255,255)
 
     #現在地
     
@@ -247,20 +249,6 @@ def main():
             for k in range(max_CELL_num[1]):
                 for i in range(max_CELL_num[0]):
                     cell_col = display_map[k][i]
-                    '''
-                    以下if文でコード振り分けする場合の文章
-                    color_code =(0,0,0,0)
-                    if cell_col =='w':
-                        color_code =(255,255,255,255)
-                    elif cell_col =='r':
-                        color_code =(255,0,0,255)
-                    elif cell_col =='g':
-                        color_code =(0,255,0,255)
-                    elif cell_col =='b':
-                        color_code =(0,0,255,255)
-                    else:
-                        color_code =(255,255,255,255)
-                    '''
                     color=color_code.get(cell_col,(255,255,255,255))
                     #描画位置拡張試し書き
                     pygame.draw.rect(screen, color, (((i-current_coordinates[0])*CELL_SIZE), ((k-current_coordinates[1])*CELL_SIZE), CELL_SIZE, CELL_SIZE))
@@ -284,6 +272,7 @@ def main():
                     grid_x = (x // CELL_SIZE)+current_coordinates[0]
                     grid_y = (y // CELL_SIZE)+current_coordinates[1]
                     recent_click_cell = [grid_x,grid_y]
+                    '''
                     if current_color==RED:
                         display_map[grid_y][grid_x]='r' 
                     elif current_color==BLUE:
@@ -291,7 +280,9 @@ def main():
                     elif current_color==WHITE:
                         display_map[grid_y][grid_x]='w'
                     elif current_color==GREEN:
-                        display_map[grid_y][grid_x]='g' 
+                        display_map[grid_y][grid_x]='g' '''
+                    display_map[grid_y][grid_x]=reverse_color_code.get(current_color,'w')
+                    
                     #pygame.draw.rect(screen, current_color, (grid_x*CELL_SIZE, grid_y*CELL_SIZE, CELL_SIZE, CELL_SIZE))
                 if current_state==state_hierarchy:
                     for button in hierarchy_buttons:
