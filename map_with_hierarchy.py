@@ -257,13 +257,16 @@ def main():
     #mapに記述する階層構造の情報の初期化
     stock_hierarchy = "None"
 
+    #マップロードの開始場所
+    load_start_point =[0,0]
+
 
 
     while True:
         clock.tick(30)
 
-        print(f"\rsavemode={modes["input_save"]}, loadmode={modes["input_load"]}, option={'p' if modes["position"] else '0-0'},  "
-               f"hierarchy=:{stock_hierarchy}, save_limited500={modes["limited_save"]} input:{input_text}                 ",end = '',flush = True)
+        print(f"\rsavemode= {modes['input_save']}, loadmode={modes['input_load']}, option={load_start_point[0]}-{load_start_point[1]} ,  "
+               f"hierarchy=:{stock_hierarchy}, save_limited={modes['limited_save']} input:{input_text}                 ",end = '',flush = True)
         
         #階層構造表示用の仕組み仮置き場
         for i in range(num_hierarchy):
@@ -312,7 +315,7 @@ def main():
 
             # キーで色変更
             elif event.type == pygame.KEYDOWN:
-                if ((modes["input_save"]) | (modes["input_load"]) |(modes["hierarchy"])) & (event.key != pygame.K_RETURN):#ENTERキーはエラーを発生させるため入力から除外すること
+                if ((modes["input_save"]) | (modes["input_load"]) |(modes["hierarchy"]) | (modes["position"])) & (event.key != pygame.K_RETURN):#ENTERキーはエラーを発生させるため入力から除外すること
                     if event.key== pygame.K_BACKSPACE:
                         input_text = input_text[:-1]
                     else:
@@ -336,8 +339,10 @@ def main():
                     modes["input_load"]= not(modes["input_load"])
                     input_text = ""
                 elif (event.key == pygame.K_3):
-
+                    if(modes["position"]==False):
+                        all_mode_off(modes)
                     modes["position"] = not(modes["position"])
+                    input_text= ""
                 elif (event.key == pygame.K_4):
                     if(modes["hierarchy"]==False):
                         all_mode_off(modes)
@@ -361,17 +366,19 @@ def main():
                     stock_hierarchy = "None"
                 elif (event.key == pygame.K_RETURN) & (modes["input_load"] == True):
                     modes["input_load"] = False
-                    if (modes["position"]):
-                        load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",display_map,recent_click_cell,max_CELL_num)
-                    else:
-                        load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",display_map,[0,0],max_CELL_num)
+                    
+                    load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",display_map,load_start_point,max_CELL_num)
                 elif (event.key == pygame.K_RETURN) & (modes["hierarchy"] == True):
                     modes["hierarchy"] = False
                     if(input_text!=""):
                         stock_hierarchy = input_text
                     else:
                         stock_hierarchy = "None"
-                        
+                elif(event.key == pygame.K_RETURN) & (modes["position"]== True):
+                    modes["position"]=False
+                    if (input_text.count(",")==1):
+                        load_start_point = [int(start_point) for start_point in input_text.split(',')]
+
                 elif (event.key == pygame.K_LEFT) & (current_coordinates[0]>0):
                     current_coordinates[0] -= 1
                 elif (event.key == pygame.K_RIGHT) & (current_coordinates[0]<(max_CELL_num[0]-(SCREEN_SIZE[0]//CELL_SIZE))):
