@@ -377,7 +377,10 @@ def main():
                 elif(event.key == pygame.K_RETURN) & (modes["position"]== True):
                     modes["position"]=False
                     if (input_text.count(",")==1):
-                        load_start_point = [int(start_point) for start_point in input_text.split(',')]
+                        try:
+                            load_start_point = [int(start_point) for start_point in input_text.split(',')]
+                        except:
+                            print("エラー発生")
 
                 elif (event.key == pygame.K_LEFT) & (current_coordinates[0]>0):
                     current_coordinates[0] -= 1
