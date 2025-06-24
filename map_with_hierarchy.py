@@ -52,7 +52,7 @@ from pygame.locals import*
 import json
 import csv
 
-SCREEN_SIZE = [500,500]
+SCREEN_SIZE = [1000,1000]
 
 
 
