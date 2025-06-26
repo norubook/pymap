@@ -43,6 +43,11 @@ load_gridのstart_pointに上記の組み合わせを送るようにする
 '''
 
 
+'''
+二段階以上離れているマップをロードする場合の情報をどうやって保存するのか模索する必要あり．
+
+'''
+
 
 
 
@@ -134,9 +139,10 @@ def load_ver2(map_info_row):
     for i in map_info_row[:2]:
         map_info.append(i)
     for k in map_info_row[3:]:
-        split_connect_info = k.split(':')
-        key,values = split_connect_info[0],split_connect_info[1:]
-        connect_info[key] = values
+        split_connect_info = k.strip().split(":")
+        if (len(split_connect_info)==3):
+            key,values = split_connect_info[0],list(map(int,split_connect_info[1:]))
+            connect_info[key] = values
 
 
     return map_info,connect_info
@@ -167,14 +173,17 @@ def load_grid(filename,display_map,start_point,max_CELL_num):
                 k+=1
         k=0
             
+        
+
+        
         for key in connect_info:
+            print(f"\n\n{len(connect_info[key])}")
+            start_point = [connect_info[key][0],connect_info[key][1]]
             with open(f"pymap/pymap/mapdata_v2/mapdata_v2_{key}.csv" ,"r",newline="") as f:
                 reader = csv.reader(f)
-                k=int(connect_info[key][1])
+                k=start_point[1]
                 #サイズ変更後の処理を設定後下記を適用してサイズを取得してください
                 map_info_row=next(reader)
-                if(map_info_row[0]=="ver2"):
-                    map_info,connect_info =load_ver2(map_info_row)
 
                 for row in reader:
                     for i in range(len(row)):
