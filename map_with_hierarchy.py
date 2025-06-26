@@ -131,7 +131,7 @@ def save_grid(filename,CELL_SIZE,screen,name_data,wide,length,display_map,hierar
 #想定返り値はname，wide，length
 
 
-def load_ver2(map_info_row):
+def load_ver2(map_info_row,keys,start_point):
     #仮置き返り値
     map_info =[]
     connect_info ={}
@@ -141,11 +141,15 @@ def load_ver2(map_info_row):
     for k in map_info_row[3:]:
         split_connect_info = k.strip().split(":")
         if (len(split_connect_info)==3):
-            key,values = split_connect_info[0],list(map(int,split_connect_info[1:]))
-            connect_info[key] = values
+            key,values = split_connect_info[0].strip(),list(map(int,split_connect_info[1:]))
+            if (key not in keys):
+                values[0]+=start_point[0]
+                values[1]+=start_point[1]
+                connect_info[key] = values
+                keys.append(key)
 
 
-    return map_info,connect_info
+    return map_info,connect_info,keys
 
 
 #loadの関数
@@ -159,7 +163,7 @@ def load_grid(filename,display_map,start_point,max_CELL_num):
             #サイズ変更後の処理を設定後下記を適用してサイズを取得してください
             map_info_row=next(reader)
             if(map_info_row[0]=="ver2"):
-                map_info,connect_info =load_ver2(map_info_row)
+                map_info,connect_info,keys =load_ver2(map_info_row,[],[0,0])
             
             for row in reader:
                 for i in range(len(row)):
@@ -175,15 +179,18 @@ def load_grid(filename,display_map,start_point,max_CELL_num):
             
         
 
-        
-        for key in connect_info:
-            print(f"\n\n{len(connect_info[key])}")
+        j =0
+        while j < len(keys):
+            key = keys[j]
+            '''この下の行でエラーが発生する'''
             start_point = [connect_info[key][0],connect_info[key][1]]
             with open(f"pymap/pymap/mapdata_v2/mapdata_v2_{key}.csv" ,"r",newline="") as f:
                 reader = csv.reader(f)
                 k=start_point[1]
                 #サイズ変更後の処理を設定後下記を適用してサイズを取得してください
                 map_info_row=next(reader)
+                if(map_info_row[0]=="ver2"):
+                    map_info,connect_info,keys =load_ver2(map_info_row,keys,start_point)
 
                 for row in reader:
                     for i in range(len(row)):
