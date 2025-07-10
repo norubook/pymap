@@ -28,8 +28,27 @@
 (ドット単位でのセーブ)
 
 関連マップをロードした場合，同じ場所を再ロードしないようにする方法．
+(サブマップを三次元配列で呼び出すか？)
+
 
 '''
+
+'''
+これからの作業計画
+
+modesのうちpositionを可変にする．     完了
+positionの値を再入する変数を用意する．     完了
+変数は[int,int]で入力させるようにする．    完了
+load_gridのstart_pointに上記の組み合わせを送るようにする
+'''
+
+
+'''
+二段階以上離れているマップをロードする場合の情報をどうやって保存するのか模索する必要あり．
+
+'''
+
+
 
 
 import pygame
@@ -38,7 +57,7 @@ from pygame.locals import*
 import json
 import csv
 
-SCREEN_SIZE = [500,500]
+SCREEN_SIZE = [1000,1000]
 
 
 
@@ -49,10 +68,15 @@ color_code={
     'r':(255,0,0,255),
     'g':(0,255,0,255),
     'b':(0,0,255,255),
+    'n':(0,0,0,0)
 }
 
 reverse_color_code ={v:k for (k,v) in color_code.items()}
 
+
+def all_mode_off(modes):
+    for key in modes:
+        modes[key] = False
 
 
 #保存とロード
@@ -61,7 +85,7 @@ reverse_color_code ={v:k for (k,v) in color_code.items()}
 
 #階層構造の保存機能
 def save_hierarchy(hierarchy_name,map_name):
-    hierarchy_file_pass =f"pymap/pymap/hierarchy_{hierarchy_name}.csv"
+    hierarchy_file_pass =f"pymap/pymap/hierarchy_v2/hierarchy_{hierarchy_name}.csv"
     new_rows =[]
     with open(hierarchy_file_pass, newline='') as f:
         reader = csv.reader(f)
@@ -107,7 +131,7 @@ def save_grid(filename,CELL_SIZE,screen,name_data,wide,length,display_map,hierar
 #想定返り値はname，wide，length
 
 
-def load_ver2(map_info_row):
+def load_ver2(map_info_row,start_point):
     #仮置き返り値
     map_info =[]
     connect_info ={}
@@ -115,12 +139,18 @@ def load_ver2(map_info_row):
     for i in map_info_row[:2]:
         map_info.append(i)
     for k in map_info_row[3:]:
-        split_connect_info = k.split(':')
-        key,values = split_connect_info[0],split_connect_info[1:]
-        connect_info[key] = values
-
-
-    return map_info,connect_info
+        split_connect_info = k.strip().split(":")
+        if (len(split_connect_info)==3):
+            key,values = split_connect_info[0].strip(),list(map(int,split_connect_info[1:]))
+            if (key not in connect_info):
+                values[0]+=start_point[0]
+                values[1]+=start_point[1]
+                connect_info[key] = values
+    
+    
+    keys = list(connect_info.keys())
+    #print(f"\n\n{connect_info[keys[0]]}")
+    return map_info,connect_info  #,keys
 
 
 #loadの関数
@@ -134,9 +164,8 @@ def load_grid(filename,display_map,start_point,max_CELL_num):
             #サイズ変更後の処理を設定後下記を適用してサイズを取得してください
             map_info_row=next(reader)
             if(map_info_row[0]=="ver2"):
-                map_info,connect_info =load_ver2(map_info_row)
-                
-        
+                map_info,connect_info =load_ver2(map_info_row,[0,0])
+            
             for row in reader:
                 for i in range(len(row)):
                     cell_col = row[i]
@@ -147,6 +176,34 @@ def load_grid(filename,display_map,start_point,max_CELL_num):
                     #pygame.draw.rect(screen, color_code, ((i*CELL_SIZE)-current_coordinates, (k*CELL_SIZE)-current_coordinates, CELL_SIZE, CELL_SIZE))
                     #pygame.draw.rect(screen, color_code, ((i*CELL_SIZE), k*CELL_SIZE, CELL_SIZE, CELL_SIZE))
                 k+=1
+        k=0
+            
+        
+
+        j =0
+        for key in connect_info:
+            
+            start_point = [connect_info[key][0],connect_info[key][1]]
+            with open(f"pymap/pymap/mapdata_v2/mapdata_v2_{key}.csv" ,"r",newline="") as f:
+                reader = csv.reader(f)
+                k=start_point[1]
+                #サイズ変更後の処理を設定後下記を適用してサイズを取得してください
+                map_info_row=next(reader)
+                if(map_info_row[0]=="ver2"):
+                    map_info,connect_info_2 =load_ver2(map_info_row,start_point)
+
+                for row in reader:
+                    for i in range(len(row)):
+                        cell_col = row[i]
+                        point_i=i+start_point[0]
+                        if((point_i<max_CELL_num[0]) & (k<max_CELL_num[1])):
+                            display_map[k][point_i]=cell_col
+                        #描画位置拡張試し書き
+                        #pygame.draw.rect(screen, color_code, ((i*CELL_SIZE)-current_coordinates, (k*CELL_SIZE)-current_coordinates, CELL_SIZE, CELL_SIZE))
+                        #pygame.draw.rect(screen, color_code, ((i*CELL_SIZE), k*CELL_SIZE, CELL_SIZE, CELL_SIZE))
+                    k+=1
+
+
 
         print("\r読み込み完了。             ",end = '',flush = True)
     except FileNotFoundError:
@@ -165,9 +222,12 @@ def load_hierarchy(hierarchy_csv):
         return 0,0,["None"]
 
 def status_hierarchy(hierarchy_name):
-    hierarchy_file_pass =f"pymap/pymap/hierarchy_{hierarchy_name}.csv"
+    hierarchy_file_pass =f"pymap/pymap/hierarchy_v2/hierarchy_{hierarchy_name}.csv"
     is_exist_hierarchy,num_hierarchy,map_name_datas =load_hierarchy(hierarchy_file_pass)
     return is_exist_hierarchy,num_hierarchy,map_name_datas
+
+
+
 
 
 def main():
@@ -179,9 +239,6 @@ def main():
     screen.fill((255,255,255))
     current_color = (255, 0, 0,255)
     CELL_SIZE = 20
-    input_save_mode = False
-    input_load_mode = False
-    positiom_mode = False
     input_text = ""
     font = pygame.font.Font(None, 36)
     clock = pygame.time.Clock()
@@ -192,16 +249,30 @@ def main():
     GREEN = (0, 255, 0,255)
     BLUE  = (0, 0, 255,255)
 
+    NONE = (0,0,0,0)
+
     #現在地
     
     current_coordinates=[0,0]
 
+    #モード
+    modes ={
+    "input_save": False,
+    "input_load" : False,
+    "position" : False,
+    "limited_save" :False,
+    "hierarchy": False,
+    }
 
 
 
     #マップの設定
-    max_CELL_num = [SCREEN_SIZE[0]//CELL_SIZE*2,SCREEN_SIZE[1]//CELL_SIZE*2]
+    map_dot_num = [1000,1000]
+    #max_CELL_num = [SCREEN_SIZE[0]//CELL_SIZE*2,SCREEN_SIZE[1]//CELL_SIZE*2]
+    max_CELL_num = [map_dot_num[0]//CELL_SIZE*2,map_dot_num[1]//CELL_SIZE*2]
     display_map = [['w' for a in range(max_CELL_num[0])]for b in range(max_CELL_num[1])]
+
+    sub_map = [['N' for a in range(max_CELL_num[0])]for b in range(max_CELL_num[1])]
     
     #直近のクリック位置保存(単位はドット)
     recent_click_cell = [0,0]
@@ -220,26 +291,28 @@ def main():
     padding = 20
 
     #csvから階層構造データの読み取り
-    is_exist_hierarchy,num_hierarchy,map_name_datas =load_hierarchy("pymap/pymap/hierarchy_sample_v2.2.csv")
+    is_exist_hierarchy,num_hierarchy,map_name_datas =load_hierarchy("pymap/pymap/hierarchy_v2/hierarchy_sample_v2.2.csv")
 
     #mapに記述する階層構造の情報の初期化
-    hierarchy_mode = False
     stock_hierarchy = "None"
+
+    #マップロードの開始場所
+    load_start_point =[0,0]
 
 
 
     while True:
         clock.tick(30)
 
-        print(f"\rsavemode={input_save_mode}, loadmode={input_load_mode}, option={'p' if positiom_mode else '0-0'},  "
-               f"hierarchy=:{stock_hierarchy},  input:{input_text}                 ",end = '',flush = True)
+        print(f"\rsavemode= {modes['input_save']}, loadmode={modes['input_load']}, option={load_start_point[0]}-{load_start_point[1]} ,  "
+               f"hierarchy=:{stock_hierarchy}, save_limited={modes['limited_save']} input:{input_text}                 ",end = '',flush = True)
         
         #階層構造表示用の仕組み仮置き場
         for i in range(num_hierarchy):
             hierarchy_button_x = 100
             hierarchy_button_y = 100 + i * (button_height + padding)
             rect = pygame.Rect(hierarchy_button_x, hierarchy_button_y, button_width, button_height)
-            hierarchy_buttons.append({"rect": rect, "stage_id": i , "map_loc": f"pymap/pymap/mapdata_{map_name_datas[i]}.csv"})
+            hierarchy_buttons.append({"rect": rect, "stage_id": i , "map_loc": f"pymap/pymap/mapdata_v2/mapdata_{map_name_datas[i]}.csv"})
         
         
         if (current_state == state_map):
@@ -281,7 +354,7 @@ def main():
 
             # キーで色変更
             elif event.type == pygame.KEYDOWN:
-                if ((input_save_mode) | (input_load_mode) |(hierarchy_mode)) & (event.key != pygame.K_RETURN):#ENTERキーはエラーを発生させるため入力から除外すること
+                if ((modes["input_save"]) | (modes["input_load"]) |(modes["hierarchy"]) | (modes["position"])) & (event.key != pygame.K_RETURN):#ENTERキーはエラーを発生させるため入力から除外すること
                     if event.key== pygame.K_BACKSPACE:
                         input_text = input_text[:-1]
                     else:
@@ -295,23 +368,24 @@ def main():
                 elif event.key == pygame.K_w:
                     current_color = WHITE
                 elif (event.key == pygame.K_1):
-                    if (input_save_mode==False):
-                        input_load_mode = False
-                    input_save_mode= not(input_save_mode)
+                    if (modes["input_save"]==False):
+                        all_mode_off(modes)
+                    modes["input_save"]= not(modes["input_save"])
                     input_text = ""
                 elif (event.key == pygame.K_2):
-                    if(input_load_mode==False):
-                        input_save_mode = False
-                        hierarchy_mode = False
-                    input_load_mode= not(input_load_mode)
+                    if(modes["input_load"]==False):
+                        all_mode_off(modes)
+                    modes["input_load"]= not(modes["input_load"])
                     input_text = ""
                 elif (event.key == pygame.K_3):
-                    positiom_mode = not(positiom_mode)
+                    if(modes["position"]==False):
+                        all_mode_off(modes)
+                    modes["position"] = not(modes["position"])
+                    input_text= ""
                 elif (event.key == pygame.K_4):
-                    if(hierarchy_mode==False):
-                        input_save_mode = False
-                        input_load_mode = False
-                    hierarchy_mode = not(hierarchy_mode)
+                    if(modes["hierarchy"]==False):
+                        all_mode_off(modes)
+                    modes["hierarchy"] = not(modes["hierarchy"])
                     input_text = ""
                 elif (event.key == pygame.K_5) & (stock_hierarchy!="None"):
                     screen.fill((255,255,255))
@@ -320,23 +394,33 @@ def main():
                         current_state=state_hierarchy
                     else:
                         stock_hierarchy="None"
-                elif (event.key == pygame.K_RETURN) & (input_save_mode == True):
-                    input_save_mode = False
-                    save_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",CELL_SIZE,screen,input_text,1000,1000,display_map,stock_hierarchy,f"v2_{input_text}")
-                    stock_hierarchy = "None"
-                elif (event.key == pygame.K_RETURN) & (input_load_mode == True):
-                    input_load_mode = False
-                    if (positiom_mode):
-                        load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",display_map,recent_click_cell,max_CELL_num)
+                elif(event.key== pygame.K_6):
+                    modes["limited_save"] = (modes["limited_save"])
+                elif (event.key == pygame.K_RETURN) & (modes["input_save"] == True):
+                    modes["input_save"] = False
+                    if modes["limited_save"]:
+                        save_grid(f"pymap/pymap/mapdata_v2/mapdata_v2_{input_text}.csv",CELL_SIZE,screen,input_text,500,500,display_map,stock_hierarchy,f"v2_{input_text}")
                     else:
-                        load_grid(f"pymap/pymap/mapdata_v2_{input_text}.csv",display_map,[0,0],max_CELL_num)
-                elif (event.key == pygame.K_RETURN) & (hierarchy_mode == True):
-                    hierarchy_mode = False
+                        save_grid(f"pymap/pymap/mapdata_v2/map_date_v2_{input_text}.csv",CELL_SIZE,screen,input_text,1000,1000,display_map,stock_hierarchy,f"v2_{input_text}")
+                    stock_hierarchy = "None"
+                elif (event.key == pygame.K_RETURN) & (modes["input_load"] == True):
+                    modes["input_load"] = False
+                    
+                    load_grid(f"pymap/pymap/mapdata_v2/mapdata_v2_{input_text}.csv",display_map,load_start_point,max_CELL_num)
+                elif (event.key == pygame.K_RETURN) & (modes["hierarchy"] == True):
+                    modes["hierarchy"] = False
                     if(input_text!=""):
                         stock_hierarchy = input_text
                     else:
                         stock_hierarchy = "None"
-                        
+                elif(event.key == pygame.K_RETURN) & (modes["position"]== True):
+                    modes["position"]=False
+                    if (input_text.count(",")==1):
+                        try:
+                            load_start_point = [int(start_point) for start_point in input_text.split(',')]
+                        except:
+                            print("エラー発生")
+
                 elif (event.key == pygame.K_LEFT) & (current_coordinates[0]>0):
                     current_coordinates[0] -= 1
                 elif (event.key == pygame.K_RIGHT) & (current_coordinates[0]<(max_CELL_num[0]-(SCREEN_SIZE[0]//CELL_SIZE))):
